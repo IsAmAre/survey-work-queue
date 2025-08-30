@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin } from '@/lib/supabase/server';
 
 // Check if user is authenticated (basic check)
 async function checkAuth(request: NextRequest) {
@@ -75,12 +76,12 @@ export async function GET(request: NextRequest) {
     // Calculate offset
     const offset = (page - 1) * limit;
 
-    // Build base query
-    let query = supabase
+    // Build base query using admin client to bypass RLS
+    let query = supabaseAdmin
       .from('search_logs')
       .select('*', { count: 'exact' });
 
-    let countQuery = supabase
+    let countQuery = supabaseAdmin
       .from('search_logs')
       .select('*', { count: 'exact', head: true });
 
@@ -151,25 +152,25 @@ export async function GET(request: NextRequest) {
       topIPsResult
     ] = await Promise.all([
       // Total searches
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('id', { count: 'exact', head: true }),
       
       // Unique IPs (all time)
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('ip_address')
         .not('ip_address', 'is', null),
       
       // Today's searches
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('id', { count: 'exact', head: true })
         .gte('created_at', todayISO)
         .lt('created_at', tomorrowISO),
       
       // Today's unique IPs
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('ip_address')
         .gte('created_at', todayISO)
@@ -177,20 +178,20 @@ export async function GET(request: NextRequest) {
         .not('ip_address', 'is', null),
       
       // Successful searches (results_found > 0)
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('id', { count: 'exact', head: true })
         .gt('results_found', 0),
       
       // Popular searches (top 10)
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('search_query')
         .not('search_query', 'is', null)
         .limit(1000), // Get recent 1000 to analyze
       
       // Top IPs (top 10)
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('ip_address')
         .not('ip_address', 'is', null)
