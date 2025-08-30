@@ -34,7 +34,7 @@ export function parseExcelFile(file: File): Promise<UploadData[]> {
         }
         
         resolve(parsedData);
-      } catch (error) {
+      } catch {
         reject(new Error('ไม่สามารถอ่านไฟล์ Excel ได้'));
       }
     };

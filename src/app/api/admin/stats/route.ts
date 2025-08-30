@@ -139,8 +139,8 @@ export async function GET(request: NextRequest) {
       todaySearches: todaySearchesResult.count || 0,
       statusBreakdown: statusCounts,
       dailySearches: dailySearches,
-      completionRate: totalItemsResult.count > 0 
-        ? Math.round(((completedItemsResult.count || 0) / totalItemsResult.count) * 100) 
+      completionRate: (totalItemsResult.count || 0) > 0 
+        ? Math.round(((completedItemsResult.count || 0) / (totalItemsResult.count || 1)) * 100) 
         : 0
     };
 

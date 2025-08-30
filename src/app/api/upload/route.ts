@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       try {
         const validated = uploadSchema.parse(data[i]);
         validatedData.push(validated);
-      } catch (error) {
+      } catch {
         errors.push(`แถวที่ ${i + 1}: ข้อมูลไม่ถูกต้อง`);
       }
     }
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert new data
-    const { data: insertedData, error: insertError } = await supabaseAdmin
+    const { error: insertError } = await supabaseAdmin
       .from('survey_requests')
       .insert(validatedData);
 

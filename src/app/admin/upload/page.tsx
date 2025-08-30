@@ -34,7 +34,7 @@ export default function UploadPage() {
     try {
       const data = await parseExcelFile(file);
       setPreviewData(data.slice(0, 10)); // Show first 10 rows for preview
-    } catch (error) {
+    } catch {
       setErrorMessage('ไม่สามารถอ่านไฟล์ได้ กรุณาตรวจสอบรูปแบบไฟล์');
     }
   };
@@ -60,11 +60,11 @@ export default function UploadPage() {
           router.push('/admin');
         }, 2000);
       } else {
-        const error = await response.json();
-        setErrorMessage(error.error || 'เกิดข้อผิดพลาดในการอัพโหลด');
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'เกิดข้อผิดพลาดในการอัพโหลด');
         setUploadStatus('error');
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('เกิดข้อผิดพลาดในการอัพโหลด');
       setUploadStatus('error');
     } finally {

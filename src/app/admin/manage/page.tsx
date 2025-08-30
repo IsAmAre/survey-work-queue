@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AdminWrapper } from '@/components/admin/AdminWrapper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Search, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight, Download, FileText, FileSpreadsheet, Calendar, Filter } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, AlertCircle, CheckCircle, Loader2, ChevronLeft, ChevronRight, Download, FileText, FileSpreadsheet, Filter } from 'lucide-react';
 import { SurveyRequest, AdminSurveyRequestsResponse } from '@/types/survey';
 import { supabase } from '@/lib/supabase/client';
 
@@ -51,25 +51,7 @@ export default function ManagePage() {
 
   const itemsPerPage = 20;
 
-  // Load data on component mount and when page/search changes
-  useEffect(() => {
-    fetchData();
-  }, [currentPage, searchTerm]);
-
-  // Debounce search to avoid too many API calls
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (currentPage !== 1) {
-        setCurrentPage(1); // Reset to first page on search
-      } else {
-        fetchData();
-      }
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       
@@ -109,7 +91,25 @@ export default function ManagePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, itemsPerPage, searchTerm]);
+
+  // Load data on component mount and when page/search changes
+  useEffect(() => {
+    fetchData();
+  }, [currentPage, searchTerm, fetchData]);
+
+  // Debounce search to avoid too many API calls
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (currentPage !== 1) {
+        setCurrentPage(1); // Reset to first page on search
+      } else {
+        fetchData();
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, currentPage, fetchData]);
 
   const showAlert = (type: 'success' | 'error', message: string) => {
     setAlert({ type, message });

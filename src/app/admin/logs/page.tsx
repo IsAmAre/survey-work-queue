@@ -12,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { 
   Search, 
   Download, 
-  Calendar, 
   Users, 
   Activity, 
   TrendingUp,
@@ -20,7 +19,6 @@ import {
   ChevronRight,
   RefreshCw,
   FileX,
-  Eye,
   AlertTriangle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
@@ -251,7 +249,7 @@ export default function SearchLogsPage() {
   const StatCard = ({ title, value, icon: Icon, description, trend }: {
     title: string;
     value: string | number;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     description?: string;
     trend?: string;
   }) => (
@@ -343,7 +341,7 @@ export default function SearchLogsPage() {
         )}
 
         {/* Popular Searches */}
-        {data?.statistics.popularSearches.length > 0 && (
+        {data?.statistics.popularSearches && data.statistics.popularSearches.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
@@ -352,7 +350,7 @@ export default function SearchLogsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {data.statistics.popularSearches.slice(0, 5).map((search, index) => (
+                  {data.statistics.popularSearches.slice(0, 5).map((search) => (
                     <div key={search.query} className="flex justify-between items-center">
                       <span className="text-sm truncate">{search.query}</span>
                       <Badge variant="secondary">{search.count}</Badge>
@@ -369,7 +367,7 @@ export default function SearchLogsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {data.statistics.topIPs.slice(0, 5).map((ip, index) => (
+                  {data.statistics.topIPs.slice(0, 5).map((ip) => (
                     <div key={ip.ip} className="flex justify-between items-center">
                       <span className="text-sm font-mono">{ip.ip}</span>
                       <Badge variant="secondary">{ip.count}</Badge>

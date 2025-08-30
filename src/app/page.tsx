@@ -4,7 +4,6 @@ import { SearchForm } from '@/components/search/SearchForm';
 import { VersionBadge } from '@/components/VersionInfo';
 import { SurveyRequest } from '@/types/survey';
 import { SearchFormData } from '@/lib/validations';
-import { SearchResult } from '@/types/survey';
 
 export default function Home() {
   const handleSearch = async (data: SearchFormData): Promise<SurveyRequest | null> => {

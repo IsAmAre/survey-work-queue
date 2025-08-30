@@ -17,10 +17,8 @@ interface VersionData {
 
 export function VersionInfo() {
   const [versionData, setVersionData] = useState<VersionData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchVersionInfo = async () => {
-    setIsLoading(true);
     try {
       const response = await fetch('/api/version');
       if (response.ok) {
@@ -29,8 +27,6 @@ export function VersionInfo() {
       }
     } catch (error) {
       console.error('Failed to fetch version info:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

@@ -197,7 +197,7 @@ function formatDateTimeForExport(dateString: string): string {
 }
 
 // Helper function to convert JSON to CSV
-function convertToCSV(data: any[]): string {
+function convertToCSV(data: Record<string, string | number>[]): string {
   if (!data || data.length === 0) return '';
   
   const headers = Object.keys(data[0]);
@@ -205,7 +205,7 @@ function convertToCSV(data: any[]): string {
   
   const csvRows = data.map(row => 
     headers.map(header => {
-      const value = row[header];
+      const value = row[header] as string | number;
       // Wrap in quotes and escape internal quotes
       if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
         return `"${value.replace(/"/g, '""')}"`;

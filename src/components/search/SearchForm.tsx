@@ -39,12 +39,13 @@ export function SearchForm({ onSearch }: SearchFormProps) {
       if (!result) {
         setError('ไม่พบข้อมูลที่ตรงกับการค้นหา');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.log('err', err);
-      if (err?.error) {
-        setError(err.error);
-      } else if (err?.message) {
-        setError(err.message);
+      const error = err as { error?: string; message?: string };
+      if (error?.error) {
+        setError(error.error);
+      } else if (error?.message) {
+        setError(error.message);
       } else {
         setError('เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่อีกครั้ง');
       }
