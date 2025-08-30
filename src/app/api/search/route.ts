@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
 import { searchSchema } from '@/lib/validations';
+import { normalizeThaiName } from '@/lib/text-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,12 +10,15 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData = searchSchema.parse(body);
     
-    // Search in database
+    // Normalize names by trimming multiple spaces to single space
+    const normalizedApplicantName = normalizeThaiName(validatedData.applicant_name);
+    
+    // Search in database with normalized name
     const { data, error } = await supabase
       .from('survey_requests')
       .select('*')
       .ilike('request_number', `%${validatedData.request_number}%`)
-      .ilike('applicant_name', `%${validatedData.applicant_name}%`)
+      .ilike('applicant_name', `%${normalizedApplicantName}%`)
       .single();
 
     if (error || !data) {
