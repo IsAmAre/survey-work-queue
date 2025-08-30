@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AdminWrapper } from '@/components/admin/AdminWrapper';
 import { Upload, FileSpreadsheet, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -88,13 +89,14 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">อัพโหลดข้อมูล</h2>
-        <p className="text-muted-foreground">
-          นำเข้าข้อมูลงานรังวัดจากไฟล์ Excel หรือ CSV
-        </p>
-      </div>
+    <AdminWrapper>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">อัพโหลดข้อมูล</h2>
+          <p className="text-muted-foreground">
+            นำเข้าข้อมูลงานรังวัดจากไฟล์ Excel หรือ CSV
+          </p>
+        </div>
 
       {uploadStatus === 'success' && (
         <Alert className="bg-green-50 border-green-200">
@@ -123,7 +125,7 @@ export default function UploadPage() {
         </CardHeader>
         <CardContent>
           <div
-            className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors"
+            className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors relative"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
           >
@@ -221,5 +223,6 @@ export default function UploadPage() {
         </Card>
       )}
     </div>
+    </AdminWrapper>
   );
 }

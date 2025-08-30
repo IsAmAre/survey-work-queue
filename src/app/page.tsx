@@ -1,8 +1,10 @@
 'use client';
 
 import { SearchForm } from '@/components/search/SearchForm';
+import { VersionBadge } from '@/components/VersionInfo';
 import { SurveyRequest } from '@/types/survey';
 import { SearchFormData } from '@/lib/validations';
+import { SearchResult } from '@/types/survey';
 
 export default function Home() {
   const handleSearch = async (data: SearchFormData): Promise<SurveyRequest | null> => {
@@ -15,11 +17,11 @@ export default function Home() {
     });
 
     if (!response.ok) {
-      throw new Error('Search failed');
+      throw new Error('ไม่พบข้อมูลที่ตรงกับการค้นหา');
     }
 
     const result = await response.json();
-    return result.data || null;
+    return result.data as SurveyRequest | null;
   };
 
   return (
@@ -34,6 +36,11 @@ export default function Home() {
           </p>
         </div>
         <SearchForm onSearch={handleSearch} />
+        
+        {/* Version info at bottom */}
+        <div className="fixed bottom-4 right-4">
+          <VersionBadge />
+        </div>
       </div>
     </div>
   );

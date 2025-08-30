@@ -33,3 +33,31 @@ export interface UploadData {
   appointment_date: string;
   status: string;
 }
+
+export interface AdminSurveyRequestsResponse {
+  data: SurveyRequest[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export interface AdminStatsResponse {
+  totalItems: number;
+  completedItems: number;
+  pendingItems: number;
+  todaySearches: number;
+  statusBreakdown: Record<string, number>;
+  dailySearches: Record<string, number>;
+  completionRate: number;
+}
+
+export interface SearchLog {
+  id: string;
+  search_query: SearchQuery;
+  applicant_name?: string;
+  ip_address: string;
+  created_at: string;
+}

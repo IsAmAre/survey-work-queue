@@ -14,12 +14,29 @@ export async function POST(request: NextRequest) {
     const normalizedApplicantName = normalizeThaiName(validatedData.applicant_name);
     
     // Search in database with normalized name
-    const { data, error } = await supabase
+    // First, get all data and normalize on both sides for comparison
+    const { data: allData, error: fetchError } = await supabase
       .from('survey_requests')
-      .select('*')
-      .ilike('request_number', `%${validatedData.request_number}%`)
-      .ilike('applicant_name', `%${normalizedApplicantName}%`)
-      .single();
+      .select('*');
+
+    if (fetchError) {
+      throw new Error(`Database query failed: ${fetchError.message}`);
+    }
+
+    // Find matching record by normalizing both search input and database values
+    const matchingRecord = allData?.find(record => {
+      const normalizedDbName = normalizeThaiName(record.applicant_name);
+      const normalizedDbRequest = record.request_number.trim();
+      const normalizedSearchRequest = validatedData.request_number.trim();
+      
+      const nameMatch = normalizedDbName.toLowerCase().includes(normalizedApplicantName.toLowerCase());
+      const requestMatch = normalizedDbRequest.toLowerCase().includes(normalizedSearchRequest.toLowerCase());
+      
+      return nameMatch && requestMatch;
+    });
+
+    const data = matchingRecord || null;
+    const error = !matchingRecord;
 
     if (error || !data) {
       // Log search attempt (for security monitoring)
@@ -27,12 +44,16 @@ export async function POST(request: NextRequest) {
                       request.headers.get('x-real-ip') || 
                       'unknown';
       
+      // Create search query string for logging
+      const searchQuery = `หมายเลขคำขอ: ${validatedData.request_number}, ชื่อผู้สมัคร: ${normalizedApplicantName}`;
+      
       await supabase
         .from('search_logs')
         .insert([{
           ip_address: clientIP,
-          search_query: validatedData,
-          search_result: false,
+          search_query: searchQuery,
+          applicant_name: normalizedApplicantName,
+          results_found: 0,
         }]);
 
       return NextResponse.json(
@@ -46,12 +67,16 @@ export async function POST(request: NextRequest) {
                     request.headers.get('x-real-ip') || 
                     'unknown';
     
+    // Create search query string for logging
+    const searchQuery = `หมายเลขคำขอ: ${validatedData.request_number}, ชื่อผู้สมัคร: ${normalizedApplicantName}`;
+    
     await supabase
       .from('search_logs')
       .insert([{
         ip_address: clientIP,
-        search_query: validatedData,
-        search_result: true,
+        search_query: searchQuery,
+        applicant_name: normalizedApplicantName,
+        results_found: 1,
       }]);
 
     return NextResponse.json({

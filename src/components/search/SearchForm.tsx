@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { searchSchema, SearchFormData } from '@/lib/validations';
+import { SearchFormData, searchSchema } from '@/lib/validations';
 import { SurveyRequest } from '@/types/survey';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2, Search } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 interface SearchFormProps {
   onSearch: (data: SearchFormData) => Promise<SurveyRequest | null>;
@@ -39,8 +39,15 @@ export function SearchForm({ onSearch }: SearchFormProps) {
       if (!result) {
         setError('ไม่พบข้อมูลที่ตรงกับการค้นหา');
       }
-    } catch (err) {
-      setError('เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่อีกครั้ง');
+    } catch (err: any) {
+      console.log('err', err);
+      if (err?.error) {
+        setError(err.error);
+      } else if (err?.message) {
+        setError(err.message);
+      } else {
+        setError('เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่อีกครั้ง');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -65,9 +72,9 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                   <FormItem>
                     <FormLabel>เลขที่คำขอ (ร.ว.12)</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="เช่น 253/2567" 
-                        {...field} 
+                      <Input
+                        placeholder="เช่น 001/2568"
+                        {...field}
                         disabled={isLoading}
                       />
                     </FormControl>
@@ -82,9 +89,9 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                   <FormItem>
                     <FormLabel>ชื่อผู้ขอ</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="เช่น นางพีรยา สมฤทธิ์" 
-                        {...field} 
+                      <Input
+                        placeholder="เช่น นายสมชาย ทำความดี"
+                        {...field}
                         disabled={isLoading}
                       />
                     </FormControl>
