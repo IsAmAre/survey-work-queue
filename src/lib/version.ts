@@ -8,8 +8,8 @@
 export const APP_VERSION = '0.2.0';
 
 // Build information
-export const BUILD_TIMESTAMP = '2025-08-30T06:00:59.946Z';
-export const COMMIT_HASH = '8888f9e';
+export const BUILD_TIMESTAMP = '2025-08-30T07:06:06.383Z';
+export const COMMIT_HASH = '203976f';
 export const GIT_BRANCH = 'main';
 
 /**

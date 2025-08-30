@@ -727,18 +727,12 @@ export default function ManagePage() {
               
               <div className="space-y-2">
                 <Label htmlFor="survey_type">ประเภทงาน</Label>
-                <Select value={formData.survey_type} onValueChange={(value) => setFormData({...formData, survey_type: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="เลือกประเภทงาน" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="รังวัดที่ดิน">รังวัดที่ดิน</SelectItem>
-                    <SelectItem value="รังวัดอาคาร">รังวัดอาคาร</SelectItem>
-                    <SelectItem value="รังวัดเส้นทาง">รังวัดเส้นทาง</SelectItem>
-                    <SelectItem value="รังวัดโครงการ">รังวัดโครงการ</SelectItem>
-                    <SelectItem value="อื่นๆ">อื่นๆ</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input
+                  id="survey_type"
+                  value={formData.survey_type}
+                  onChange={(e) => setFormData({...formData, survey_type: e.target.value})}
+                  placeholder="ระบุประเภทงาน (เช่น รังวัดที่ดิน, รังวัดอาคาร, รังวัดเส้นทาง)"
+                />
               </div>
               
               <div className="space-y-2">

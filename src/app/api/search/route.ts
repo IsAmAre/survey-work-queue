@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const validatedData = searchSchema.parse(body);
     
     // Normalize names by trimming multiple spaces to single space
-    const normalizedApplicantName = normalizeThaiName(validatedData.applicant_name);
+    const normalizedApplicantName = validatedData.applicant_name ? normalizeThaiName(validatedData.applicant_name) : '';
     
     // Search in database with normalized name
     // First, get all data and normalize on both sides for comparison
@@ -27,12 +27,29 @@ export async function POST(request: NextRequest) {
     const matchingRecord = allData?.find(record => {
       const normalizedDbName = normalizeThaiName(record.applicant_name);
       const normalizedDbRequest = record.request_number.trim();
-      const normalizedSearchRequest = validatedData.request_number.trim();
       
-      const nameMatch = normalizedDbName.toLowerCase().includes(normalizedApplicantName.toLowerCase());
-      const requestMatch = normalizedDbRequest.toLowerCase().includes(normalizedSearchRequest.toLowerCase());
+      let matches = false;
       
-      return nameMatch && requestMatch;
+      // Check if request number was provided and matches
+      if (validatedData.request_number && validatedData.request_number.trim()) {
+        const normalizedSearchRequest = validatedData.request_number.trim();
+        const requestMatch = normalizedDbRequest.toLowerCase().includes(normalizedSearchRequest.toLowerCase());
+        matches = requestMatch;
+      }
+      
+      // Check if applicant name was provided and matches
+      if (validatedData.applicant_name && validatedData.applicant_name.trim()) {
+        const nameMatch = normalizedDbName.toLowerCase().includes(normalizedApplicantName.toLowerCase());
+        if (validatedData.request_number && validatedData.request_number.trim()) {
+          // If both fields provided, both must match (AND logic)
+          matches = matches && nameMatch;
+        } else {
+          // If only name provided, name must match
+          matches = nameMatch;
+        }
+      }
+      
+      return matches;
     });
 
     const data = matchingRecord || null;
@@ -45,7 +62,14 @@ export async function POST(request: NextRequest) {
                       'unknown';
       
       // Create search query string for logging
-      const searchQuery = `หมายเลขคำขอ: ${validatedData.request_number}, ชื่อผู้สมัคร: ${normalizedApplicantName}`;
+      const searchParts = [];
+      if (validatedData.request_number && validatedData.request_number.trim()) {
+        searchParts.push(`หมายเลขคำขอ: ${validatedData.request_number}`);
+      }
+      if (validatedData.applicant_name && validatedData.applicant_name.trim()) {
+        searchParts.push(`ชื่อผู้สมัคร: ${normalizedApplicantName}`);
+      }
+      const searchQuery = searchParts.join(', ');
       
       await supabase
         .from('search_logs')
@@ -68,7 +92,14 @@ export async function POST(request: NextRequest) {
                     'unknown';
     
     // Create search query string for logging
-    const searchQuery = `หมายเลขคำขอ: ${validatedData.request_number}, ชื่อผู้สมัคร: ${normalizedApplicantName}`;
+    const searchParts = [];
+    if (validatedData.request_number && validatedData.request_number.trim()) {
+      searchParts.push(`หมายเลขคำขอ: ${validatedData.request_number}`);
+    }
+    if (validatedData.applicant_name && validatedData.applicant_name.trim()) {
+      searchParts.push(`ชื่อผู้สมัคร: ${normalizedApplicantName}`);
+    }
+    const searchQuery = searchParts.join(', ');
     
     await supabase
       .from('search_logs')

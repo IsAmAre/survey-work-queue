@@ -60,7 +60,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">ค้นหาสถานะงานรังวัด</CardTitle>
           <CardDescription>
-            กรุณาระบุเลขที่คำขอและชื่อผู้ขอเพื่อค้นหาข้อมูล
+            กรุณาระบุเลขที่คำขอ หรือ ชื่อผู้ขอ หรือทั้งคู่เพื่อค้นหาข้อมูล
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -71,7 +71,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 name="request_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>เลขที่คำขอ (ร.ว.12)</FormLabel>
+                    <FormLabel>เลขที่คำขอ (ร.ว.12) - ไม่บังคับ</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="เช่น 001/2568"
@@ -88,7 +88,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 name="applicant_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>ชื่อผู้ขอ</FormLabel>
+                    <FormLabel>ชื่อผู้ขอ - ไม่บังคับ</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="เช่น นายสมชาย ทำความดี"

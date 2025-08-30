@@ -13,12 +13,13 @@ CREATE TABLE survey_requests (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create search_logs table for security monitoring
+-- Create search_logs table for search monitoring and analytics
 CREATE TABLE search_logs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     ip_address TEXT NOT NULL,
-    search_query JSONB NOT NULL,
-    search_result BOOLEAN NOT NULL DEFAULT false,
+    search_query TEXT NOT NULL, -- Search query string for logging
+    applicant_name TEXT, -- Applicant name that was searched for
+    results_found INTEGER NOT NULL DEFAULT 0, -- Number of results found (0 or 1)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -28,6 +29,7 @@ CREATE INDEX idx_survey_requests_applicant_name ON survey_requests(applicant_nam
 CREATE INDEX idx_survey_requests_request_applicant ON survey_requests(request_number, applicant_name);
 CREATE INDEX idx_search_logs_created_at ON search_logs(created_at);
 CREATE INDEX idx_search_logs_ip ON search_logs(ip_address);
+CREATE INDEX idx_search_logs_applicant_name ON search_logs(applicant_name);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE survey_requests ENABLE ROW LEVEL SECURITY;

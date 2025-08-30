@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
 export const searchSchema = z.object({
-  request_number: z.string().min(1, 'กรุณาระบุเลขที่คำขอ'),
-  applicant_name: z.string().min(1, 'กรุณาระบุชื่อผู้ขอ'),
+  request_number: z.string().optional(),
+  applicant_name: z.string().optional(),
+}).refine((data) => {
+  return (data.request_number && data.request_number.trim()) || 
+         (data.applicant_name && data.applicant_name.trim());
+}, {
+  message: 'กรุณาระบุเลขที่คำขอหรือชื่อผู้ขออย่างใดอย่างหนึ่ง',
 });
 
 export const uploadSchema = z.object({
