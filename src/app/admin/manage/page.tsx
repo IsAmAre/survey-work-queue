@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { AdminWrapper } from '@/components/admin/AdminWrapper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,9 @@ import { supabase } from '@/lib/supabase/client';
 export default function ManagePage() {
   const [data, setData] = useState<AdminSurveyRequestsResponse | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const isInitialMount = useRef(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -65,7 +67,7 @@ export default function ManagePage() {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: itemsPerPage.toString(),
-        ...(searchTerm && { search: searchTerm })
+        ...(debouncedSearch && { search: debouncedSearch })
       });
 
       const response = await fetch(`/api/admin/survey-requests?${params}`, {
@@ -91,25 +93,25 @@ export default function ManagePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, itemsPerPage, searchTerm]);
+  }, [currentPage, itemsPerPage, debouncedSearch]);
 
-  // Load data on component mount and when page/search changes
+  // Fetch data when page or debounced search changes
   useEffect(() => {
     fetchData();
-  }, [currentPage, searchTerm, fetchData]);
+  }, [fetchData]);
 
-  // Debounce search to avoid too many API calls
+  // Debounce search input and reset to page 1
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     const timeoutId = setTimeout(() => {
-      if (currentPage !== 1) {
-        setCurrentPage(1); // Reset to first page on search
-      } else {
-        fetchData();
-      }
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
     }, 500);
-
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, currentPage, fetchData]);
+  }, [searchTerm]);
 
   const showAlert = (type: 'success' | 'error', message: string) => {
     setAlert({ type, message });

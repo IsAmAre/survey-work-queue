@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin } from '@/lib/supabase/server';
 import * as XLSX from 'xlsx';
 
 // Check if user is authenticated
@@ -8,14 +8,14 @@ async function checkAuth(request: NextRequest) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
   }
-  
+
   const token = authHeader.split(' ')[1];
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  
+  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+
   if (error || !user) {
     return null;
   }
-  
+
   return user;
 }
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const dateFrom = searchParams.get('dateFrom') || '';
     const dateTo = searchParams.get('dateTo') || '';
 
-    let query = supabase
+    let query = supabaseAdmin
       .from('survey_requests')
       .select('*')
       .order('order_number', { ascending: true });

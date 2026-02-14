@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin } from '@/lib/supabase/server';
 
 // Check if user is authenticated (basic check)
 async function checkAuth(request: NextRequest) {
@@ -7,14 +7,14 @@ async function checkAuth(request: NextRequest) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
   }
-  
+
   const token = authHeader.split(' ')[1];
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  
+  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+
   if (error || !user) {
     return null;
   }
-  
+
   return user;
 }
 
@@ -47,24 +47,24 @@ export async function GET(request: NextRequest) {
       todaySearchesResult
     ] = await Promise.all([
       // Total survey requests
-      supabase
+      supabaseAdmin
         .from('survey_requests')
         .select('id', { count: 'exact', head: true }),
       
       // Completed survey requests
-      supabase
+      supabaseAdmin
         .from('survey_requests')
         .select('id', { count: 'exact', head: true })
         .eq('status', 'completed'),
       
       // Pending survey requests (assuming 'pending' status or non-completed)
-      supabase
+      supabaseAdmin
         .from('survey_requests')
         .select('id', { count: 'exact', head: true })
         .neq('status', 'completed'),
       
       // Today's searches
-      supabase
+      supabaseAdmin
         .from('search_logs')
         .select('id', { count: 'exact', head: true })
         .gte('created_at', todayISO)
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get additional stats - status breakdown
-    const { data: statusBreakdown, error: statusError } = await supabase
+    const { data: statusBreakdown, error: statusError } = await supabaseAdmin
       .from('survey_requests')
       .select('status')
       .not('status', 'is', null);
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const sevenDaysAgoISO = sevenDaysAgo.toISOString();
 
-    const { data: recentSearches, error: recentError } = await supabase
+    const { data: recentSearches, error: recentError } = await supabaseAdmin
       .from('search_logs')
       .select('created_at')
       .gte('created_at', sevenDaysAgoISO)

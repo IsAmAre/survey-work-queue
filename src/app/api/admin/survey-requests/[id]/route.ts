@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin } from '@/lib/supabase/server';
 import type { SurveyRequest } from '@/types/survey';
 
 // Check if user is authenticated (basic check)
@@ -8,14 +8,14 @@ async function checkAuth(request: NextRequest) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
   }
-  
+
   const token = authHeader.split(' ')[1];
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  
+  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+
   if (error || !user) {
     return null;
   }
-  
+
   return user;
 }
 
@@ -45,7 +45,7 @@ export async function PUT(
     }
 
     // Check if survey request exists
-    const { data: existingRequest, error: fetchError } = await supabase
+    const { data: existingRequest, error: fetchError } = await supabaseAdmin
       .from('survey_requests')
       .select('id')
       .eq('id', id)
@@ -88,7 +88,7 @@ export async function PUT(
       updateData.status = body.status;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('survey_requests')
       .update(updateData)
       .eq('id', id)
@@ -145,7 +145,7 @@ export async function DELETE(
     }
 
     // Check if survey request exists
-    const { data: existingRequest, error: fetchError } = await supabase
+    const { data: existingRequest, error: fetchError } = await supabaseAdmin
       .from('survey_requests')
       .select('id, request_number')
       .eq('id', id)
@@ -158,7 +158,7 @@ export async function DELETE(
       );
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('survey_requests')
       .delete()
       .eq('id', id);
