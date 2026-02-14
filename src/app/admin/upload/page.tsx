@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { parseExcelFile } from '@/lib/excel-parser';
 import { UploadData } from '@/types/survey';
+import { supabase } from '@/lib/supabase/client';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -46,9 +47,17 @@ export default function UploadPage() {
     try {
       const data = await parseExcelFile(selectedFile);
       
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setErrorMessage('กรุณาเข้าสู่ระบบใหม่');
+        setIsUploading(false);
+        return;
+      }
+
       const response = await fetch('/api/upload', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ data }),

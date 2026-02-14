@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { sanitizePostgrestFilter } from '@/lib/text-utils';
 
 // Check if user is authenticated (basic check)
 async function checkAuth(request: NextRequest) {
@@ -100,10 +101,13 @@ export async function GET(request: NextRequest) {
     }
 
     if (searchTerm) {
-      // Search in query, applicant name, or IP address
-      const searchPattern = `%${searchTerm}%`;
-      query = query.or(`search_query.ilike.${searchPattern},applicant_name.ilike.${searchPattern},ip_address.ilike.${searchPattern}`);
-      countQuery = countQuery.or(`search_query.ilike.${searchPattern},applicant_name.ilike.${searchPattern},ip_address.ilike.${searchPattern}`);
+      // Sanitize to prevent PostgREST filter injection
+      const sanitized = sanitizePostgrestFilter(searchTerm);
+      if (sanitized) {
+        const searchPattern = `%${sanitized}%`;
+        query = query.or(`search_query.ilike.${searchPattern},applicant_name.ilike.${searchPattern},ip_address.ilike.${searchPattern}`);
+        countQuery = countQuery.or(`search_query.ilike.${searchPattern},applicant_name.ilike.${searchPattern},ip_address.ilike.${searchPattern}`);
+      }
     }
 
     // Apply pagination and sorting

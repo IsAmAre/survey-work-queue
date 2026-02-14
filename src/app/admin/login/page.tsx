@@ -20,7 +20,7 @@ export default function AdminLogin() {
     const checkExistingSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        console.log('Already authenticated, redirecting to admin');
+        // Already authenticated, redirect to admin
         window.location.href = '/admin';
       }
     };
@@ -39,19 +39,16 @@ export default function AdminLogin() {
       });
 
       if (error) {
-        console.error('Login error:', error);
         setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
         return;
       }
 
       if (data.user && data.session) {
-        console.log('Login successful:', data.user.email);
         // Use window.location for proper redirect
         window.location.href = '/admin';
         return;
       }
-    } catch (err) {
-      console.error('Login exception:', err);
+    } catch {
       setError('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
     } finally {
       setIsLoading(false);

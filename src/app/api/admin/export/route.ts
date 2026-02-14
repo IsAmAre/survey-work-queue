@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { sanitizePostgrestFilter } from '@/lib/text-utils';
 import * as XLSX from 'xlsx';
 
 // Check if user is authenticated
@@ -42,9 +43,12 @@ export async function GET(request: NextRequest) {
       .select('*')
       .order('order_number', { ascending: true });
 
-    // Apply search filter
+    // Apply search filter (sanitize to prevent PostgREST filter injection)
     if (search) {
-      query = query.or(`request_number.ilike.%${search}%,applicant_name.ilike.%${search}%,surveyor_name.ilike.%${search}%,status.ilike.%${search}%`);
+      const sanitized = sanitizePostgrestFilter(search);
+      if (sanitized) {
+        query = query.or(`request_number.ilike.%${sanitized}%,applicant_name.ilike.%${sanitized}%,surveyor_name.ilike.%${sanitized}%,status.ilike.%${sanitized}%`);
+      }
     }
 
     // Apply status filter

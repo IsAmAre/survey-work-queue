@@ -30,7 +30,6 @@ export function AdminWrapper({ children }: AdminWrapperProps) {
         if (!mounted) return;
         
         if (!session) {
-          console.log('No session found, redirecting to login');
           setUser(null);
           setIsLoading(false);
           // Use window.location for more reliable redirect
@@ -38,11 +37,9 @@ export function AdminWrapper({ children }: AdminWrapperProps) {
           return;
         }
         
-        console.log('Session found:', session.user.email);
         setUser(session.user);
         setIsLoading(false);
-      } catch (error) {
-        console.error('Auth check error:', error);
+      } catch {
         if (mounted) {
           setIsLoading(false);
           window.location.href = '/admin/login';
@@ -54,8 +51,6 @@ export function AdminWrapper({ children }: AdminWrapperProps) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
-        
-        console.log('Auth state changed:', event, session?.user?.email);
         
         if (event === 'SIGNED_OUT' || !session) {
           setUser(null);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { sanitizePostgrestFilter } from '@/lib/text-utils';
 import type { SurveyRequest } from '@/types/survey';
 
 // Check if user is authenticated (basic check)
@@ -42,9 +43,12 @@ export async function GET(request: NextRequest) {
       .from('survey_requests')
       .select('*', { count: 'exact' });
 
-    // Apply search filter
+    // Apply search filter (sanitize to prevent PostgREST filter injection)
     if (search) {
-      query = query.or(`request_number.ilike.%${search}%,applicant_name.ilike.%${search}%`);
+      const sanitized = sanitizePostgrestFilter(search);
+      if (sanitized) {
+        query = query.or(`request_number.ilike.%${sanitized}%,applicant_name.ilike.%${sanitized}%`);
+      }
     }
 
     // Apply status filter

@@ -16,3 +16,12 @@ export function normalizeText(text: string): string {
 export function normalizeThaiName(name: string): string {
   return normalizeText(name);
 }
+
+/**
+ * Sanitizes user input for use in PostgREST filter strings (.or(), .ilike()).
+ * Strips characters that could inject additional filter clauses:
+ * commas, dots, parentheses, quotes, and backslashes.
+ */
+export function sanitizePostgrestFilter(input: string): string {
+  return input.replace(/[,.()"'\\]/g, '');
+}
