@@ -5,11 +5,11 @@
  */
 
 // Version from package.json
-export const APP_VERSION = '0.2.0';
+export const APP_VERSION = '1.0.0';
 
 // Build information
-export const BUILD_TIMESTAMP = '2026-02-19T15:47:30.906Z';
-export const COMMIT_HASH = '23eef12';
+export const BUILD_TIMESTAMP = '2026-02-19T16:49:28.966Z';
+export const COMMIT_HASH = 'e77794b';
 export const GIT_BRANCH = 'main';
 
 /**
