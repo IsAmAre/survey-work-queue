@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { searchSchema } from '@/lib/validations';
-import { normalizeThaiName, sanitizePostgrestFilter } from '@/lib/text-utils';
+import { sanitizePostgrestFilter } from '@/lib/text-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,73 +9,60 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     const validatedData = searchSchema.parse(body);
+    const searchTerm = validatedData.search_term.trim();
 
-    // Normalize names by trimming multiple spaces to single space
-    const normalizedApplicantName = validatedData.applicant_name ? normalizeThaiName(validatedData.applicant_name) : '';
+    if (!searchTerm) {
+      return NextResponse.json(
+        { success: false, error: 'กรุณาระบุคำค้นหา' },
+        { status: 400 }
+      );
+    }
 
-    // Build query with DB-side filtering instead of fetching entire table
-    let query = supabaseAdmin
+    const sanitized = sanitizePostgrestFilter(searchTerm);
+    if (!sanitized) {
+      return NextResponse.json(
+        { success: false, error: 'คำค้นหาไม่ถูกต้อง' },
+        { status: 400 }
+      );
+    }
+
+    // Search by request_number OR document_number
+    const { data: results, error: fetchError } = await supabaseAdmin
       .from('survey_requests')
-      .select('*');
-
-    if (validatedData.request_number?.trim()) {
-      const sanitized = sanitizePostgrestFilter(validatedData.request_number.trim());
-      if (sanitized) {
-        query = query.ilike('request_number', `%${sanitized}%`);
-      }
-    }
-
-    if (normalizedApplicantName) {
-      const sanitized = sanitizePostgrestFilter(normalizedApplicantName);
-      if (sanitized) {
-        query = query.ilike('applicant_name', `%${sanitized}%`);
-      }
-    }
-
-    query = query.limit(1);
-
-    const { data: results, error: fetchError } = await query;
+      .select('*')
+      .or(`request_number.eq.${sanitized},document_number.eq.${sanitized}`)
+      .order('created_at', { ascending: false })
+      .limit(1);
 
     if (fetchError) {
       throw new Error(`Database query failed: ${fetchError.message}`);
     }
-
-    const data = results?.[0] || null;
 
     // Build log entry
     const clientIP = request.headers.get('x-forwarded-for') ||
                     request.headers.get('x-real-ip') ||
                     'unknown';
 
-    const searchParts = [];
-    if (validatedData.request_number?.trim()) {
-      searchParts.push(`หมายเลขคำขอ: ${validatedData.request_number}`);
-    }
-    if (validatedData.applicant_name?.trim()) {
-      searchParts.push(`ชื่อผู้สมัคร: ${normalizedApplicantName}`);
-    }
-    const searchQuery = searchParts.join(', ');
-
-    // Log search using admin client (no public INSERT RLS needed)
+    // Log search using admin client
     await supabaseAdmin
       .from('search_logs')
       .insert([{
         ip_address: clientIP,
-        search_query: searchQuery,
-        applicant_name: normalizedApplicantName,
-        results_found: data ? 1 : 0,
+        search_query: `ค้นหา: ${searchTerm}`,
+        applicant_name: '',
+        results_found: results?.length || 0,
       }]);
 
-    if (!data) {
+    if (!results || results.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'ไม่พบข้อมูลที่ตรงกับการค้นหา' },
+        { success: false, data: [], error: 'ไม่พบข้อมูลที่ตรงกับการค้นหา' },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      data
+      data: results
     });
 
   } catch (error) {

@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Clear existing data (optional - you might want to modify this)
+    // Clear existing data
     const { error: deleteError } = await supabaseAdmin
       .from('survey_requests')
       .delete()

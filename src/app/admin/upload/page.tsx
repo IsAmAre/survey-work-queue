@@ -177,11 +177,12 @@ export default function UploadPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>ลำดับ</TableHead>
+                    <TableRow>
                     <TableHead>เลขที่คำขอ</TableHead>
-                    <TableHead>ชื่อผู้ขอ</TableHead>
-                    <TableHead>วันค้าง</TableHead>
+                      <TableHead>ประเภทการรังวัด</TableHead>
+                      <TableHead>ผู้ขอรังวัด</TableHead>
+                      <TableHead>เอกสารสิทธิ์</TableHead>
+                      <TableHead>เลขที่</TableHead>
                     <TableHead>ช่างรังวัด</TableHead>
                     <TableHead>สถานะ</TableHead>
                   </TableRow>
@@ -189,10 +190,11 @@ export default function UploadPage() {
                 <TableBody>
                   {previewData.map((row, index) => (
                     <TableRow key={index}>
-                      <TableCell>{row.order_number}</TableCell>
                       <TableCell>{row.request_number}</TableCell>
+                      <TableCell className="max-w-40 truncate">{row.survey_type}</TableCell>
                       <TableCell className="max-w-48 truncate">{row.applicant_name}</TableCell>
-                      <TableCell>{row.days_pending}</TableCell>
+                      <TableCell className="max-w-40 truncate">{row.document_type}</TableCell>
+                      <TableCell>{row.document_number}</TableCell>
                       <TableCell>{row.surveyor_name}</TableCell>
                       <TableCell className="max-w-32 truncate">{row.status}</TableCell>
                     </TableRow>

@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     if (search) {
       const sanitized = sanitizePostgrestFilter(search);
       if (sanitized) {
-        query = query.or(`request_number.ilike.%${sanitized}%,applicant_name.ilike.%${sanitized}%`);
+        query = query.or(`request_number.ilike.%${sanitized}%,applicant_name.ilike.%${sanitized}%,document_number.ilike.%${sanitized}%`);
       }
     }
 
@@ -105,12 +105,8 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     const requiredFields = [
-      'order_number',
       'request_number',
       'applicant_name',
-      'days_pending',
-      'surveyor_name',
-      'status'
     ];
 
     for (const field of requiredFields) {
@@ -123,14 +119,15 @@ export async function POST(request: NextRequest) {
     }
 
     const surveyRequest: Omit<SurveyRequest, 'id' | 'created_at' | 'updated_at'> = {
-      order_number: parseInt(body.order_number),
       request_number: body.request_number,
       applicant_name: body.applicant_name,
-      days_pending: parseInt(body.days_pending),
-      surveyor_name: body.surveyor_name,
+      surveyor_name: body.surveyor_name || '',
       survey_type: body.survey_type || '',
       appointment_date: body.appointment_date || '',
-      status: body.status
+      status: body.status || '',
+      document_type: body.document_type || '',
+      document_number: body.document_number || '',
+      action_date: body.action_date || '',
     };
 
     const { data, error } = await supabaseAdmin

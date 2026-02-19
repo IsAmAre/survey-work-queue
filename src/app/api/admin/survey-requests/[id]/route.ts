@@ -63,17 +63,11 @@ export async function PUT(
       updated_at: new Date().toISOString()
     };
 
-    if (body.order_number !== undefined) {
-      updateData.order_number = parseInt(body.order_number);
-    }
     if (body.request_number !== undefined) {
       updateData.request_number = body.request_number;
     }
     if (body.applicant_name !== undefined) {
       updateData.applicant_name = body.applicant_name;
-    }
-    if (body.days_pending !== undefined) {
-      updateData.days_pending = parseInt(body.days_pending);
     }
     if (body.surveyor_name !== undefined) {
       updateData.surveyor_name = body.surveyor_name;
@@ -86,6 +80,15 @@ export async function PUT(
     }
     if (body.status !== undefined) {
       updateData.status = body.status;
+    }
+    if (body.document_type !== undefined) {
+      updateData.document_type = body.document_type;
+    }
+    if (body.document_number !== undefined) {
+      updateData.document_number = body.document_number;
+    }
+    if (body.action_date !== undefined) {
+      updateData.action_date = body.action_date;
     }
 
     const { data, error } = await supabaseAdmin

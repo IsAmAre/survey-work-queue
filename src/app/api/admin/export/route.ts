@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { sanitizePostgrestFilter } from '@/lib/text-utils';
-import * as XLSX from 'xlsx';
+import { generateXlsx } from '@/lib/xlsx-writer';
 
 // Check if user is authenticated
 async function checkAuth(request: NextRequest) {
@@ -41,13 +41,13 @@ export async function GET(request: NextRequest) {
     let query = supabaseAdmin
       .from('survey_requests')
       .select('*')
-      .order('order_number', { ascending: true });
+      .order('request_number', { ascending: true });
 
     // Apply search filter (sanitize to prevent PostgREST filter injection)
     if (search) {
       const sanitized = sanitizePostgrestFilter(search);
       if (sanitized) {
-        query = query.or(`request_number.ilike.%${sanitized}%,applicant_name.ilike.%${sanitized}%,surveyor_name.ilike.%${sanitized}%,status.ilike.%${sanitized}%`);
+        query = query.or(`request_number.ilike.%${sanitized}%,applicant_name.ilike.%${sanitized}%,surveyor_name.ilike.%${sanitized}%,status.ilike.%${sanitized}%,document_number.ilike.%${sanitized}%`);
       }
     }
 
@@ -83,14 +83,15 @@ export async function GET(request: NextRequest) {
 
     // Transform data for export
     const exportData = data.map((item) => ({
-      'ลำดับ': item.order_number,
       'เลขที่คำขอ': item.request_number,
-      'ชื่อผู้ขอ': item.applicant_name,
-      'ประเภทงาน': item.survey_type,
-      'วันนัดหมาย': formatDateForExport(item.appointment_date),
-      'วันค้าง': item.days_pending,
+      'ประเภทการรังวัด': item.survey_type,
+      'ผู้ขอรังวัด': item.applicant_name,
+      'ประเภทเอกสารสิทธิ': item.document_type || '',
+      'เลขที่': item.document_number || '',
       'ช่างรังวัด': item.surveyor_name,
+      'วันที่นัดรังวัด': item.appointment_date,
       'สถานะ': item.status,
+      'วันที่ดำเนินการ': item.action_date || '',
       'วันที่สร้าง': formatDateTimeForExport(item.created_at),
       'วันที่แก้ไขล่าสุด': formatDateTimeForExport(item.updated_at),
     }));
@@ -113,42 +114,29 @@ export async function GET(request: NextRequest) {
       });
     } else {
       // Generate Excel
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.json_to_sheet(exportData);
-      
-      // Set column widths for better readability
-      const colWidths = [
-        { wch: 8 },   // ลำดับ
-        { wch: 15 },  // เลขที่คำขอ
-        { wch: 25 },  // ชื่อผู้ขอ
-        { wch: 15 },  // ประเภทงาน
-        { wch: 15 },  // วันนัดหมาย
-        { wch: 10 },  // วันค้าง
-        { wch: 20 },  // ช่างรังวัด
-        { wch: 15 },  // สถานะ
-        { wch: 20 },  // วันที่สร้าง
-        { wch: 20 },  // วันที่แก้ไขล่าสุด
-      ];
-      worksheet['!cols'] = colWidths;
+      const columnWidths: Record<string, number> = {
+        'เลขที่คำขอ': 15,
+        'ประเภทการรังวัด': 20,
+        'ผู้ขอรังวัด': 30,
+        'ประเภทเอกสารสิทธิ': 25,
+        'เลขที่': 10,
+        'ช่างรังวัด': 20,
+        'วันที่นัดรังวัด': 15,
+        'สถานะ': 25,
+        'วันที่ดำเนินการ': 15,
+        'วันที่สร้าง': 20,
+        'วันที่แก้ไขล่าสุด': 20,
+      };
 
-      // Add some styling
-      const range = XLSX.utils.decode_range(worksheet['!ref'] || '');
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        const headerCell = XLSX.utils.encode_cell({ r: 0, c: C });
-        if (worksheet[headerCell]) {
-          worksheet[headerCell].s = {
-            font: { bold: true },
-            fill: { fgColor: { rgb: "E6E6FA" } }
-          };
-        }
-      }
+      const excelBuffer = await generateXlsx({
+        sheetName: 'Survey Data',
+        data: exportData,
+        columnWidths,
+      });
 
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Survey Data');
-      
-      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
       const fileName = `survey-data-export_${timestamp}.xlsx`;
-      
-      return new NextResponse(excelBuffer, {
+
+      return new NextResponse(new Uint8Array(excelBuffer), {
         headers: {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           'Content-Disposition': `attachment; filename="${fileName}"`,
@@ -165,21 +153,6 @@ export async function GET(request: NextRequest) {
       { error: 'Internal server error during export' },
       { status: 500 }
     );
-  }
-}
-
-// Helper function to format date for export
-function formatDateForExport(dateString: string): string {
-  try {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  } catch {
-    return dateString;
   }
 }
 

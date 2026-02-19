@@ -1,37 +1,40 @@
 export interface SurveyRequest {
   id: string;
-  order_number: number;
   request_number: string;
   applicant_name: string;
-  days_pending: number;
   surveyor_name: string;
   survey_type: string;
   appointment_date: string;
   status: string;
+  document_type: string;
+  document_number: string;
+  action_date: string;
+  order_number?: number;
+  days_pending?: number;
   created_at: string;
   updated_at: string;
 }
 
 export interface SearchQuery {
-  request_number: string;
-  applicant_name: string;
+  search_term: string;
 }
 
 export interface SearchResult {
   success: boolean;
-  data?: SurveyRequest;
+  data?: SurveyRequest[];
   error?: string;
 }
 
 export interface UploadData {
-  order_number: number;
   request_number: string;
-  applicant_name: string;
-  days_pending: number;
-  surveyor_name: string;
   survey_type: string;
+  applicant_name: string;
+  document_type: string;
+  document_number: string;
+  surveyor_name: string;
   appointment_date: string;
   status: string;
+  action_date: string;
 }
 
 export interface AdminSurveyRequestsResponse {
