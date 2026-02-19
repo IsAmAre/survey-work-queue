@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { SearchFormData, searchSchema } from '@/lib/validations';
 import { SurveyRequest } from '@/types/survey';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Search, FileText, User, Ruler, MapPin, ClipboardCheck, CalendarDays, RefreshCw } from 'lucide-react';
-import { useState, useCallback, useEffect } from 'react';
+import { CalendarDays, ClipboardCheck, FileText, Loader2, MapPin, RefreshCw, Ruler, Search, User } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 interface SearchFormProps {
@@ -124,7 +124,8 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                     <FormLabel>เลขที่คำขอ หรือ เลขที่เอกสารสิทธิ์</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="เช่น 251/2567 หรือ 273"
+                        type='search'
+                        placeholder="เช่น 1/2569 หรือ 123456"
                         {...field}
                         disabled={isLoading}
                         className="text-lg py-5"
@@ -148,6 +149,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                   </div>
                   <Input
                     type="number"
+                    inputMode='numeric'
                     placeholder="คำตอบ"
                     value={captchaInput}
                     onChange={(e) => {
@@ -201,7 +203,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
 
       {result && (
         <Card className="shadow-xl border-green-200/60 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100 pb-4">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100 py-4">
             <div className="flex items-center justify-between">
               <div>
                 <CardDescription className="text-green-700 font-medium text-sm">เลขที่คำขอ</CardDescription>

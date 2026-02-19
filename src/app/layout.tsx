@@ -15,8 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ระบบค้นหาสถานะงานรังวัด",
-  description: "ค้นหาสถานะงานรังวัดด้วยเลขที่คำขอและชื่อผู้ขอ",
+  title: "ระบบค้นหาสถานะงานรังวัด | สำนักงานที่ดินจังหวัดเชียงราย สาขาพญาเม็งราย",
+  description: "ค้นหาสถานะงานรังวัดด้วยเลขที่คำขอและเลขที่เอกสารสิทธิ์ สำนักงานที่ดินจังหวัดเชียงราย สาขาพญาเม็งราย",
+  icons: {
+    icon: "/land-logo.png",
+    apple: "/land-logo.png",
+  },
 };
 
 export default function RootLayout({

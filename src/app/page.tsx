@@ -84,6 +84,9 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Contact Info */}
             <div className="text-center md:text-left">
+              <p className="text-base md:text-lg font-bold mb-1">
+                สำนักงานที่ดินจังหวัดเชียงราย สาขาพญาเม็งราย
+              </p>
               <p className="text-amber-200 text-sm font-medium mb-1">ติดต่อสำนักงาน</p>
               <p className="text-base md:text-lg font-semibold">
                 เบอร์โทรศัพท์ 053799151
@@ -105,13 +108,11 @@ export default function Home() {
               </div>
             </div>
           </div>
+          <div className="text-center mt-4 pt-3 border-t border-amber-700/50">
+            <VersionBadge />
+          </div>
         </div>
       </footer>
-
-      {/* Version info */}
-      <div className="fixed bottom-4 right-4">
-        <VersionBadge />
-      </div>
     </div>
   );
 }
