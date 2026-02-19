@@ -7,12 +7,18 @@ import { Input } from '@/components/ui/input';
 import { SearchFormData, searchSchema } from '@/lib/validations';
 import { SurveyRequest } from '@/types/survey';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Search, FileText, User, Ruler, MapPin, ClipboardCheck, CalendarDays } from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, Search, FileText, User, Ruler, MapPin, ClipboardCheck, CalendarDays, RefreshCw } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 interface SearchFormProps {
   onSearch: (data: SearchFormData) => Promise<SurveyRequest[]>;
+}
+
+function generateCaptcha() {
+  const a = Math.floor(Math.random() * 9) + 1;
+  const b = Math.floor(Math.random() * 9) + 1;
+  return { a, b, answer: a + b };
 }
 
 export function SearchForm({ onSearch }: SearchFormProps) {
@@ -20,6 +26,25 @@ export function SearchForm({ onSearch }: SearchFormProps) {
   const [result, setResult] = useState<SurveyRequest | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+
+  // CAPTCHA state
+  const [captcha, setCaptcha] = useState(() => generateCaptcha());
+  const [captchaInput, setCaptchaInput] = useState('');
+  const [captchaError, setCaptchaError] = useState<string | null>(null);
+
+  const refreshCaptcha = useCallback(() => {
+    setCaptcha(generateCaptcha());
+    setCaptchaInput('');
+    setCaptchaError(null);
+  }, []);
+
+  // Regenerate captcha after each successful search
+  useEffect(() => {
+    if (hasSearched) {
+      refreshCaptcha();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, error]);
 
   const form = useForm<SearchFormData>({
     resolver: zodResolver(searchSchema),
@@ -29,6 +54,14 @@ export function SearchForm({ onSearch }: SearchFormProps) {
   });
 
   const handleSearch = async (data: SearchFormData) => {
+    // Verify CAPTCHA first
+    if (parseInt(captchaInput) !== captcha.answer) {
+      setCaptchaError('คำตอบไม่ถูกต้อง กรุณาลองใหม่');
+      refreshCaptcha();
+      return;
+    }
+    setCaptchaError(null);
+
     setIsLoading(true);
     setError(null);
     setResult(null);
@@ -101,6 +134,45 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                   </FormItem>
                 )}
               />
+
+              {/* Math CAPTCHA */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none">
+                  ยืนยันตัวตน
+                </label>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg select-none">
+                    <span className="text-lg font-bold text-amber-900 tracking-wider">
+                      {captcha.a} + {captcha.b} = ?
+                    </span>
+                  </div>
+                  <Input
+                    type="number"
+                    placeholder="คำตอบ"
+                    value={captchaInput}
+                    onChange={(e) => {
+                      setCaptchaInput(e.target.value);
+                      setCaptchaError(null);
+                    }}
+                    disabled={isLoading}
+                    className="w-24 text-center text-lg py-5"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={refreshCaptcha}
+                    className="text-gray-400 hover:text-amber-700"
+                    title="เปลี่ยนคำถาม"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+                {captchaError && (
+                  <p className="text-sm text-red-600 font-medium">{captchaError}</p>
+                )}
+              </div>
+
               <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800 text-white py-5 text-lg" disabled={isLoading}>
                 {isLoading ? (
                   <>
@@ -142,7 +214,6 @@ export function SearchForm({ onSearch }: SearchFormProps) {
           </CardHeader>
           <CardContent className="pt-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* ชื่อผู้ขอ */}
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <User className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -151,7 +222,6 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 </div>
               </div>
 
-              {/* ประเภท */}
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <Ruler className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -160,7 +230,6 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 </div>
               </div>
 
-              {/* ช่างรังวัด */}
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <MapPin className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -169,7 +238,6 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 </div>
               </div>
 
-              {/* เลขที่เอกสารสิทธิ์ */}
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <FileText className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -180,7 +248,6 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 </div>
               </div>
 
-              {/* สถานะงาน */}
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <ClipboardCheck className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -189,7 +256,6 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 </div>
               </div>
 
-              {/* วันที่ */}
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <CalendarDays className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
