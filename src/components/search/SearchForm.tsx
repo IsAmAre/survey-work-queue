@@ -27,8 +27,8 @@ export function SearchForm({ onSearch }: SearchFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // CAPTCHA state
-  const [captcha, setCaptcha] = useState(() => generateCaptcha());
+  // CAPTCHA state - initialize as null to avoid hydration mismatch from Math.random()
+  const [captcha, setCaptcha] = useState<{ a: number; b: number; answer: number } | null>(null);
   const [captchaInput, setCaptchaInput] = useState('');
   const [captchaError, setCaptchaError] = useState<string | null>(null);
 
@@ -36,6 +36,11 @@ export function SearchForm({ onSearch }: SearchFormProps) {
     setCaptcha(generateCaptcha());
     setCaptchaInput('');
     setCaptchaError(null);
+  }, []);
+
+  // Generate captcha on mount (client-side only)
+  useEffect(() => {
+    setCaptcha(generateCaptcha());
   }, []);
 
   // Regenerate captcha after each successful search
@@ -55,7 +60,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
 
   const handleSearch = async (data: SearchFormData) => {
     // Verify CAPTCHA first
-    if (parseInt(captchaInput) !== captcha.answer) {
+    if (!captcha || parseInt(captchaInput) !== captcha.answer) {
       setCaptchaError('คำตอบไม่ถูกต้อง กรุณาลองใหม่');
       refreshCaptcha();
       return;
@@ -142,9 +147,9 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                   ยืนยันตัวตน
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg select-none">
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg select-none min-w-[140px] justify-center">
                     <span className="text-lg font-bold text-amber-900 tracking-wider">
-                      {captcha.a} + {captcha.b} = ?
+                      {captcha ? `${captcha.a} + ${captcha.b} = ?` : '\u00A0'}
                     </span>
                   </div>
                   <Input
