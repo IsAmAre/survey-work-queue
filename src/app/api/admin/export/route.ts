@@ -84,10 +84,11 @@ export async function GET(request: NextRequest) {
     // Transform data for export
     const exportData = data.map((item) => ({
       'เลขที่คำขอ': item.request_number,
-      'ประเภทการรังวัด': item.survey_type,
+      'ประเภทงาน': item.survey_type,
       'ผู้ขอรังวัด': item.applicant_name,
       'ประเภทเอกสารสิทธิ': item.document_type || '',
       'เลขที่': item.document_number || '',
+      'ตำแหน่ง': item.position || '',
       'ช่างรังวัด': item.surveyor_name,
       'วันที่นัดรังวัด': item.appointment_date,
       'สถานะ': item.status,
@@ -116,10 +117,11 @@ export async function GET(request: NextRequest) {
       // Generate Excel
       const columnWidths: Record<string, number> = {
         'เลขที่คำขอ': 15,
-        'ประเภทการรังวัด': 20,
+        'ประเภทงาน': 20,
         'ผู้ขอรังวัด': 30,
         'ประเภทเอกสารสิทธิ': 25,
         'เลขที่': 10,
+        'ตำแหน่ง': 15,
         'ช่างรังวัด': 20,
         'วันที่นัดรังวัด': 15,
         'สถานะ': 25,

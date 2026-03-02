@@ -10,6 +10,7 @@ export const uploadSchema = z.object({
   applicant_name: z.string().min(1),
   document_type: z.string().default(''),
   document_number: z.string().default(''),
+  position: z.string().default(''),
   surveyor_name: z.string().default(''),
   appointment_date: z.string().default(''),
   status: z.string().default(''),

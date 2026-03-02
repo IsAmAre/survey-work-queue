@@ -122,6 +122,7 @@ export async function POST(request: NextRequest) {
       request_number: body.request_number,
       applicant_name: body.applicant_name,
       surveyor_name: body.surveyor_name || '',
+      position: body.position || '',
       survey_type: body.survey_type || '',
       appointment_date: body.appointment_date || '',
       status: body.status || '',

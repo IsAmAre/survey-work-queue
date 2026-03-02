@@ -15,7 +15,7 @@ export async function parseExcelFile(file: File): Promise<UploadData[]> {
     const parsedData: UploadData[] = [];
 
     // Skip header row (row 1), iterate from row 2
-    // CSV columns: เลขที่คำขอ, ประเภทการรังวัด, ผู้ขอรังวัด, ประเภทเอกสารสิทธิ, เลขที่, ตำแหน่ง, ชื่อ, วันที่นัดรังวัด, สถานะ, วันที่ดำเนินการ
+    // CSV columns: เลขที่คำขอ, ประเภทงาน, ผู้ขอรังวัด, ประเภทเอกสารสิทธิ, เลขที่, ตำแหน่ง, ชื่อ, วันที่นัดรังวัด, สถานะ, วันที่ดำเนินการ
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return;
 
@@ -28,7 +28,7 @@ export async function parseExcelFile(file: File): Promise<UploadData[]> {
           applicant_name: String(values[3] || '').trim(),
           document_type: String(values[4] || '').trim(),
           document_number: String(values[5] || '').trim(),
-          // values[6] = ตำแหน่ง (skip - always "ช่างรังวัด")
+          position: String(values[6] || '').trim(),
           surveyor_name: String(values[7] || '').trim(),
           appointment_date: String(values[8] || '').trim(),
           status: String(values[9] || '').trim(),

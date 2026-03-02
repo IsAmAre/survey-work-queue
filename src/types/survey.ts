@@ -3,6 +3,7 @@ export interface SurveyRequest {
   request_number: string;
   applicant_name: string;
   surveyor_name: string;
+  position: string;
   survey_type: string;
   appointment_date: string;
   status: string;
@@ -32,6 +33,7 @@ export interface UploadData {
   document_type: string;
   document_number: string;
   surveyor_name: string;
+  position: string;
   appointment_date: string;
   status: string;
   action_date: string;

@@ -72,6 +72,9 @@ export async function PUT(
     if (body.surveyor_name !== undefined) {
       updateData.surveyor_name = body.surveyor_name;
     }
+    if (body.position !== undefined) {
+      updateData.position = body.position;
+    }
     if (body.survey_type !== undefined) {
       updateData.survey_type = body.survey_type;
     }

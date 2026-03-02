@@ -69,7 +69,7 @@ export default function Home() {
       <div className="flex-grow container mx-auto px-4 py-8">
         <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-            ระบบค้นหาสถานะงานรังวัด
+            ระบบค้นหาสถานะงาน
           </h2>
           <p className="text-base text-gray-500">
             ตรวจสอบความคืบหน้าของงานรังวัดของคุณ
@@ -97,7 +97,15 @@ export default function Home() {
             </div>
 
             {/* QR Code */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex gap-4">
+              <div className="w-24 h-24 md:w-28 md:h-28 relative rounded-lg overflow-hidden shadow-lg border-2 border-white/20 bg-white p-1">
+                <Image
+                  src="/landcheck-qr.jpg"
+                  alt="QR Code"
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <div className="w-24 h-24 md:w-28 md:h-28 relative rounded-lg overflow-hidden shadow-lg border-2 border-white/20 bg-white p-1">
                 <Image
                   src="/qrcode.png"

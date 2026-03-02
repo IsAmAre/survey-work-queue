@@ -47,6 +47,7 @@ export default function ManagePage() {
     document_type: '',
     document_number: '',
     surveyor_name: '',
+    position: '',
     appointment_date: '',
     status: '',
     action_date: '',
@@ -125,6 +126,7 @@ export default function ManagePage() {
       document_type: item.document_type || '',
       document_number: item.document_number || '',
       surveyor_name: item.surveyor_name,
+      position: item.position || '',
       appointment_date: item.appointment_date,
       status: item.status,
       action_date: item.action_date || '',
@@ -141,6 +143,7 @@ export default function ManagePage() {
       document_type: '',
       document_number: '',
       surveyor_name: '',
+      position: '',
       appointment_date: '',
       status: '',
       action_date: '',
@@ -208,6 +211,7 @@ export default function ManagePage() {
       document_type: formData.document_type || '',
       document_number: formData.document_number || '',
       surveyor_name: formData.surveyor_name || '',
+      position: formData.position || '',
       appointment_date: formData.appointment_date || '',
       status: formData.status || '',
       action_date: formData.action_date || '',
@@ -536,8 +540,9 @@ export default function ManagePage() {
                       <TableRow>
                       <TableHead>เลขที่คำขอ</TableHead>
                         <TableHead>ผู้ขอรังวัด</TableHead>
-                        <TableHead>ประเภทการรังวัด</TableHead>
+                        <TableHead>ประเภทงาน</TableHead>
                         <TableHead>เอกสารสิทธิ์</TableHead>
+                        <TableHead>ตำแหน่ง</TableHead>
                       <TableHead>ช่างรังวัด</TableHead>
                       <TableHead>สถานะ</TableHead>
                         <TableHead>วันที่ดำเนินการ</TableHead>
@@ -553,6 +558,7 @@ export default function ManagePage() {
                         <TableCell className="text-sm max-w-40 truncate">
                           {item.document_type ? `${item.document_type} ${item.document_number}` : item.document_number || '-'}
                         </TableCell>
+                        <TableCell className="text-sm text-gray-600">{item.position || '-'}</TableCell>
                         <TableCell>{item.surveyor_name}</TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(item.status)} variant="secondary">
@@ -654,7 +660,7 @@ export default function ManagePage() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="survey_type">ประเภทการรังวัด</Label>
+                <Label htmlFor="survey_type">ประเภทงาน</Label>
                 <Input
                   id="survey_type"
                   value={formData.survey_type}
@@ -695,14 +701,25 @@ export default function ManagePage() {
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="surveyor_name">ช่างรังวัด</Label>
-                <Input
-                  id="surveyor_name"
-                  value={formData.surveyor_name}
-                  onChange={(e) => setFormData({ ...formData, surveyor_name: e.target.value })}
-                  placeholder="ชื่อช่างรังวัดที่รับผิดชอบ"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="position">ตำแหน่ง</Label>
+                  <Input
+                    id="position"
+                    value={formData.position}
+                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                    placeholder="เช่น ช่างรังวัด"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="surveyor_name">ชื่อ</Label>
+                  <Input
+                    id="surveyor_name"
+                    value={formData.surveyor_name}
+                    onChange={(e) => setFormData({ ...formData, surveyor_name: e.target.value })}
+                    placeholder="ชื่อผู้ดำเนินการ"
+                  />
+                </div>
               </div>
               
               <div className="space-y-2">

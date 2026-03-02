@@ -179,10 +179,11 @@ export default function UploadPage() {
                 <TableHeader>
                     <TableRow>
                     <TableHead>เลขที่คำขอ</TableHead>
-                      <TableHead>ประเภทการรังวัด</TableHead>
+                      <TableHead>ประเภทงาน</TableHead>
                       <TableHead>ผู้ขอรังวัด</TableHead>
                       <TableHead>เอกสารสิทธิ์</TableHead>
                       <TableHead>เลขที่</TableHead>
+                      <TableHead>ตำแหน่ง</TableHead>
                     <TableHead>ช่างรังวัด</TableHead>
                     <TableHead>สถานะ</TableHead>
                   </TableRow>
@@ -195,6 +196,7 @@ export default function UploadPage() {
                       <TableCell className="max-w-48 truncate">{row.applicant_name}</TableCell>
                       <TableCell className="max-w-40 truncate">{row.document_type}</TableCell>
                       <TableCell>{row.document_number}</TableCell>
+                      <TableCell>{row.position}</TableCell>
                       <TableCell>{row.surveyor_name}</TableCell>
                       <TableCell className="max-w-32 truncate">{row.status}</TableCell>
                     </TableRow>

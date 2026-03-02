@@ -113,7 +113,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
     <div className="w-full max-w-2xl mx-auto space-y-6">
       <Card className="shadow-lg border-amber-200/50">
         <CardHeader className="text-center pb-4">
-          <CardTitle className="text-xl text-amber-900">ค้นหาสถานะงานรังวัด</CardTitle>
+          <CardTitle className="text-xl text-amber-900">ค้นหาสถานะงาน</CardTitle>
           <CardDescription>
             ระบุเลขที่คำขอ หรือ เลขที่เอกสารสิทธิ์ เพื่อค้นหาข้อมูล
           </CardDescription>
@@ -214,37 +214,17 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 <CardDescription className="text-green-700 font-medium text-sm">เลขที่คำขอ</CardDescription>
                 <CardTitle className="text-2xl text-green-900 mt-1">{result.request_number}</CardTitle>
               </div>
-              <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusStyle(result.status)}`}>
-                {result.status || '-'}
-              </span>
+              <div className="text-right">
+                <CardDescription className="text-green-700 font-medium text-sm flex items-center justify-end gap-1">
+                  <User className="h-3.5 w-3.5" />
+                  ชื่อผู้ขอ
+                </CardDescription>
+                <CardTitle className="text-xl text-green-900 mt-1">{result.applicant_name}</CardTitle>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="pt-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-                <User className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">ชื่อผู้ขอ</p>
-                  <p className="text-sm font-semibold text-gray-900">{result.applicant_name}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-                <Ruler className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">ประเภทการรังวัด</p>
-                  <p className="text-sm font-semibold text-gray-900">{result.survey_type || '-'}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-                <MapPin className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">ช่างรังวัด</p>
-                  <p className="text-sm font-semibold text-gray-900">{result.surveyor_name || '-'}</p>
-                </div>
-              </div>
-
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <FileText className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -256,10 +236,28 @@ export function SearchForm({ onSearch }: SearchFormProps) {
               </div>
 
               <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+                <Ruler className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">ประเภทงาน</p>
+                  <p className="text-sm font-semibold text-gray-900">{result.survey_type || '-'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+                <MapPin className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">{result.position || 'ช่างรังวัด'}</p>
+                  <p className="text-sm font-semibold text-gray-900">{result.surveyor_name || '-'}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
                 <ClipboardCheck className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-xs text-gray-500 font-medium">สถานะงาน</p>
-                  <p className="text-sm font-semibold text-gray-900">{result.status || '-'}</p>
+                  <p className="text-xs text-gray-500 font-medium mb-1">สถานะงาน</p>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold border ${getStatusStyle(result.status)}`}>
+                    {result.status || '-'}
+                  </span>
                 </div>
               </div>
 
