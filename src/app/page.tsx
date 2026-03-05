@@ -1,6 +1,7 @@
 'use client';
 
 import { SearchForm } from '@/components/search/SearchForm';
+import { UsageStatsCard } from '@/components/search/UsageStatsCard';
 import { VersionBadge } from '@/components/VersionInfo';
 import { SurveyRequest } from '@/types/survey';
 import { SearchFormData } from '@/lib/validations';
@@ -81,9 +82,9 @@ export default function Home() {
       {/* Footer Section */}
       <footer className="bg-gradient-to-r from-amber-800 via-amber-900 to-amber-800 text-white py-6 mt-auto">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-4 md:gap-6">
             {/* Contact Info */}
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left md:flex-1">
               <p className="text-base md:text-lg font-bold mb-1">
                 สำนักงานที่ดินจังหวัดเชียงราย สาขาพญาเม็งราย
               </p>
@@ -95,6 +96,9 @@ export default function Home() {
                 ต่อ 0(ฝ่ายอำนวยการ), 12(ฝ่ายทะเบียน), 13(ฝ่ายรังวัด)
               </p>
             </div>
+
+            {/* Usage Stats */}
+            <UsageStatsCard />
 
             {/* QR Code */}
             <div className="flex-shrink-0 flex gap-4">
